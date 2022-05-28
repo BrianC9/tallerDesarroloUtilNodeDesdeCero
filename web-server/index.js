@@ -1,10 +1,22 @@
 console.clear()
 import { createServer } from 'http'
+import dotenv from 'dotenv'
 import express from 'express'
-const PORT = 3000
+import { USERS_BBDD } from './bbdd.js'
+dotenv.config();
+const PUERTO = process.env.PORT
 const expressApp = express()
+
 expressApp.use(express.json())
 expressApp.use(express.text())
+
+//Obtener los detalles de una cuenta 
+
+//Crear una nueva cuetna
+
+//Actualizar una cuenta
+
+//Eliminar una cuenta
 
 expressApp.get('/', (req, res) => {
     if (req.query?.nombre === 'bryan') {
