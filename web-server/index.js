@@ -18,6 +18,7 @@ expressApp.get('/cuenta/:guid', (req, res) => {
     if (!usuario) return res.status(404).send("No se ha encontrado el usuario con id: " + idConsulta)
     return res.send(usuario)
 })
+
 //Crear una nueva cuenta a partir de guid y name
 expressApp.post('/cuenta/:guid', (req, res) => {
     const { guid, name } = req.body
@@ -28,6 +29,7 @@ expressApp.post('/cuenta/:guid', (req, res) => {
     return res.send("Se ha creado el nuevo usuario: \n" + name)
 
 })
+
 //Actualizar el nombre de una cuenta
 expressApp.patch('/cuenta/:guid', (req, res) => {
     const idConsulta = req.params.guid
@@ -39,6 +41,7 @@ expressApp.patch('/cuenta/:guid', (req, res) => {
     return res.send("Se ha actualizado el nombre a: " + usuario.name)
 
 })
+
 //Eliminar una cuenta
 expressApp.delete('/cuenta/:guid', (req, res) => {
     const idConsulta = req.params.guid
