@@ -10,59 +10,43 @@ const expressApp = express()
 expressApp.use(express.json())
 expressApp.use(express.text())
 
-//Obtener los detalles de una cuenta 
+//Obtener los detalles de una cuenta a partir del guid
 
-//Crear una nueva cuetna
+expressApp.get('/cuenta/:guid', (req, res) => {
+    const idConsulta = req.params.guid
+    const usuario = USERS_BBDD.find((usuario) => usuario.guid === idConsulta)
+    if (!usuario) return res.status(404).send("No se ha encontrado el usuario con id: " + idConsulta)
+    return res.send(usuario)
+})
+//Crear una nueva cuenta a partir de guid y name
+expressApp.post('/cuenta/:guid', (req, res) => {
+    const { guid, name } = req.body
+    if (!guid || !name) return res.status(400).send("No se ha especificado un guid o name")
+    const usuario = USERS_BBDD.find((usuario) => usuario.guid === guid)
+    if (usuario) return res.status(409).send("Ya existe el usuario en la BBDD")
+    USERS_BBDD.push({ guid, name })
+    return res.send("Se ha creado el nuevo usuario: \n" + name)
 
-//Actualizar una cuenta
+})
+//Actualizar el nombre de una cuenta
+expressApp.patch('/cuenta/:guid', (req, res) => {
+    const idConsulta = req.params.guid
+    const { name } = req.body
+    if (!name) return res.status(400).send("No se ha escpecificado el nuevo nombre")
+    const usuario = USERS_BBDD.find((usuario) => usuario.guid === idConsulta)
+    if (!usuario) return res.status(404).send("No se ha encontrado el usuario con id: " + idConsulta)
+    usuario.name = name
+    return res.send("Se ha actualizado el nombre a: " + usuario.name)
 
+})
 //Eliminar una cuenta
+expressApp.delete('/cuenta/:guid', (req, res) => {
+    const idConsulta = req.params.guid
+    const usuarioIndex = USERS_BBDD.findIndex((usuario) => usuario.guid === idConsulta)
+    if (usuarioIndex === -1) return res.status(404).send("No se ha encontrado el usuario con id: " + idConsulta)
+    const usuarioEliminado = USERS_BBDD[usuarioIndex]
 
-expressApp.get('/', (req, res) => {
-    if (req.query?.nombre === 'bryan') {
-        res.json({
-            "nombre": "bryan",
-            "apellido": "cusme"
-        })
-        //res.end(`<html><h1>Bienvenido ${req.query?.nombre}</h1></html>`)
-    } else if (req.query?.nombre === 'carmen') {
-        res.end(`El apellido de ${req.query?.nombre} es Marcos`)
-    } else {
-        res.status(401).send("No se autoriza al usuario " + req.query?.nombre)
-    }
+    USERS_BBDD.splice(usuarioIndex, 1)
+    return res.send("Se ha eliminado correctamente el siguiente usuario\n" + usuarioEliminado.name)
 })
-expressApp.get('/cuenta/:idCuenta', (req, res) => {
-    res.end(`Bienvenido usuario con cuenta ${req.params.idCuenta}`)
-    console.log(req.body)
-})
-
-// La ruta 404 se debe especificar siempre al final
-expressApp.get('*', (req, res) => {
-    res.status(404).send("No se encuentra el recurso")
-});
-expressApp.listen(PORT, () => {
-    console.log(`Servidor levantado en puerto ${PORT}`)
-})
-// const server = createServer((req, res) => {
-//     let data = ''
-//     let chunkIndex = 0
-//     req.setEncoding('utf-8')
-//     if (req.method === 'POST') {
-
-//         req.on('data', (chunk) => {
-//             data += chunk;
-//             chunkIndex++
-//             console.log(chunkIndex, chunk)
-//         })
-//         req.on('end', () => {
-//             console.log("Recibido POST method", data.toString())
-//         })
-
-//     } else if (req.method !== 'POST') {
-//         res.end(req.method)
-//     }
-//     console.log('PETICION RECIBIDA')
-
-// })
-
-//server.listen(3000)
+expressApp.listen(PUERTO)
