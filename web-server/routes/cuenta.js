@@ -2,10 +2,16 @@ import express from "express";
 import { USERS_BBDD } from '../bbdd.js'
 
 const cuentaRouter = express.Router();
+//Creacion de un middleware propio
+
+cuentaRouter.use((req, res, next) => {
+    console.log(req.ip);
+    next();
+})
 
 //Obtener los detalles de una cuenta a partir del guid
 
-cuentaRouter.get('/cuenta/:guid', (req, res) => {
+cuentaRouter.get('/:guid', (req, res) => {
     const idConsulta = req.params.guid
     const usuario = USERS_BBDD.find((usuario) => usuario.guid === idConsulta)
     if (!usuario) return res.status(404).send("No se ha encontrado el usuario con id: " + idConsulta)
@@ -13,7 +19,7 @@ cuentaRouter.get('/cuenta/:guid', (req, res) => {
 })
 
 //Crear una nueva cuenta a partir de guid y name
-cuentaRouter.post('/cuenta', (req, res) => {
+cuentaRouter.post('/', (req, res) => {
     const { guid, name } = req.body
     if (!guid || !name) return res.status(400).send("No se ha especificado un guid o name")
     const usuario = USERS_BBDD.find((usuario) => usuario.guid === guid)
@@ -24,7 +30,7 @@ cuentaRouter.post('/cuenta', (req, res) => {
 })
 
 //Actualizar el nombre de una cuenta
-cuentaRouter.patch('/cuenta/:guid', (req, res) => {
+cuentaRouter.patch('/:guid', (req, res) => {
     const idConsulta = req.params.guid
     const { name } = req.body
     if (!name) return res.status(400).send("No se ha escpecificado el nuevo nombre")
@@ -36,7 +42,7 @@ cuentaRouter.patch('/cuenta/:guid', (req, res) => {
 })
 
 //Eliminar una cuenta
-cuentaRouter.delete('/cuenta/:guid', (req, res) => {
+cuentaRouter.delete('/:guid', (req, res) => {
     const idConsulta = req.params.guid
     const usuarioIndex = USERS_BBDD.findIndex((usuario) => usuario.guid === idConsulta)
     if (usuarioIndex === -1) return res.status(404).send("No se ha encontrado el usuario con id: " + idConsulta)
