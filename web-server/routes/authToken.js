@@ -2,10 +2,11 @@ import { Router } from "express";
 import checkEmailPasswd from "../helpers/checkEmailPasswd.js";
 import { SignJWT, jwtVerify } from 'jose'
 import { USERS_BBDD } from "../bbdd.js";
+import validateLoginDTO from "../dto/validateLoginDTO.js";
 const authTokenRouter = Router();
 const encoder = new TextEncoder()
 // Login con email y password
-authTokenRouter.post('/login', async (req, res) => {
+authTokenRouter.post('/login', validateLoginDTO, async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).end("Tienes que introducir email y password")
     try {
