@@ -7,6 +7,7 @@ import authRouter from './routes/auth.js'
 import authTokenRouter from './routes/authToken.js'
 import authSessionRouter from './routes/authSession.js'
 import cookieParser from 'cookie-parser'
+import mongoose from 'mongoose'
 // Uso de variables de entorno
 dotenv.config();
 
@@ -25,6 +26,14 @@ expressApp.use("/auth", authRouter);
 expressApp.use("/auth-token", authTokenRouter)
 expressApp.use("/auth-session", authSessionRouter)
 
-expressApp.listen(PUERTO, () => {
-    console.log("Servidor levantado en el puerto " + PUERTO)
-})
+
+
+
+const bootstrap = async () => {
+    await mongoose.connect(process.env.MONGODB_URL)
+    expressApp.listen(PUERTO, () => {
+        console.log("Servidor levantado en el puerto " + PUERTO)
+    })
+
+}
+bootstrap();
